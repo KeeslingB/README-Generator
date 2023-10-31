@@ -14,27 +14,30 @@ inquirer.prompt([
     name: 'description'
   },
   {
-    type: 'checkbox',
-    message: 'What sections would you like included in your README(Sellect all that apply)',
-    name: 'sections',
-    choices: ['Installation instructions', 'Usage information', 'Contributions guidelines', 'Test instructions'],
-    validate: (choices) => {
-      if (!choices.length) {
-        return 'atleast one selection please'
-      }
-      return true;
-    }
+    type: 'input',
+    message: 'Installation instructions',
+    name: 'installation'
+  },
+  {
+    type: 'input',
+    message: 'Usage information',
+    name: 'usage'
+  },
+  {
+    type: 'input',
+    message: 'Contributions guidelines',
+    name: 'contributions'
+  },
+  {
+    type: 'input',
+    message: 'testing instructions',
+    name: 'testing',
   },
   {
     type: 'list',
     message: 'What Licenses would you like?',
     name: 'license',
     choices: ['MIT', 'Mozilla', 'Perl', 'Apache']
-  },
-  {
-    type: 'confirm',
-    name: 'gitignore',
-    message: 'Would you like a .gitignore file included?'
   },
   {
     type: 'input',
@@ -46,37 +49,55 @@ inquirer.prompt([
     message: 'What is your Email?',
     name: 'email'
   },
+  {
+    type: 'confirm',
+    name: 'gitignore',
+    message: 'Would you like a .gitignore file included?'
+  },
 ])
   .then((response) =>
     createPage(response));
 
-    
+    //takes all information given and puts onto page
 function createPage(response) {
   readMe = `# ${response.name} 
+  
 ## Table of Contents.
-- [Description.](#description.)
+- [Description.](#description)
 
-- [Installation instructions.](#installationinstructions.)
+- [Installation instructions.](#installation-instructions)
 
-- [Usage information.](#usageinformation.)
+- [Usage information.](#usage-information)
 
-- [Test instructions.](#testinstructions.)
+- [Test instructions.](#test-instructions)
 
 ## Description. 
+
 ${response.description}.
 
-${generateSection(response.sections)}
+## Installation Instructions.
+
+${response.installation}
+
+## Usage information.
+
+${response.usage}
+
+## Test Instructions.
+
+${response.testing}
 
 ## License.
 
 ${licenseResponse(response.license)}
 
 # Contact Me / Questions.
+
 ### ${response.github}
 
 ### ${response.email}
 `;
-
+//
   fs.writeFile('README.md', readMe, (err) =>
     err ? console.error(err) : console.log('README created'));
   if (response.gitignore) {
@@ -85,60 +106,7 @@ ${licenseResponse(response.license)}
   }
 };
 
-
-function generateSection(response) {
-  let template = ``;
-  if (response.includes('Installation instructions')) {
-    template += `## Installation instructions.
-${section0}.
-
-`;
-  }
-  if (response.includes('Usage information')) {
-    template += `## Usage Information.
-${section1}.
-
-`;
-  }
-  if (response.includes('Contributions guidelines')) {
-    template += `## Contributions.
-${section2}. 
-
-`;
-  }
-  if (response.includes('Test instructions')) {
-    template += `## Test Instructions.
-${section3}.
-
-`;
-  }
-  return template;
-}
-
-// section choices
-
-const section0 = `
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.`;
-
-
-const section1 = `
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.`;
-
-
-const section2 = `
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.`;
-
-const section3 = `
-Here you can detail various methods of testing your final project.`;
-
-
-// license options inside function returning content if selected in prompts
-
-
+// sends the correct license to the page depending what user selects
 function licenseResponse(license) {
   const licenseMit = `
   THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
@@ -183,4 +151,4 @@ http://www.apache.org/licenses/LICENSE-2.0
   } else {
     return licenseApache;
   }
-}
+};
